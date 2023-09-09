@@ -6,7 +6,8 @@
 
 (println "quick-start")
 
-(defn fac [n]
+(defn fac
+  [n]
   (loop [cnt n
          acc 1]
     (if (zero? cnt)
