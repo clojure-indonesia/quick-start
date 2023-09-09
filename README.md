@@ -1,4 +1,4 @@
-### COMPILE
+### COMPILE (Unix-like)
 ```bash
 clojure -M -m cljs.main -c quick-start.core
 ```
