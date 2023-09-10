@@ -16,10 +16,11 @@
              (* acc cnt)))))
 
 (let [button (.querySelector js/document "button")
-      type EventType.CLICK]
-  (listen button type (fn [] (let [number (->> (.querySelector js/document "input[type=number]")
-                                               (.-value)
-                                               (js/parseInt))
-                                   msg (str "factorial " number " = " (fac number))
-                                   p (.querySelector js/document "p")]
-                               (set! (.-innerHTML p) msg)))))
+      click EventType.CLICK]
+  (listen button click (fn []
+                         (let [number (->> (.querySelector js/document "input[type=number]")
+                                           (.-value)
+                                           (js/parseInt))
+                               msg (str "factorial " number " = " (fac number))
+                               p (.querySelector js/document "p")]
+                           (set! (.-innerHTML p) msg)))))
