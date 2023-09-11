@@ -20,8 +20,9 @@
   (listen button click (fn []
                          (let [number (->> (.querySelector js/document "input[type=number]")
                                            (.-value))
-                               msg (if (= number "")
-                                     "Can't convert string '' to number, NaN"
-                                     (str "factorial " number " = " (fac (js/parseInt number))))
+                               msg (cond
+                                     (= number "") "Can't convert string '' to number, NaN"
+                                     (neg? (js/parseInt number)) "Positive integer, please :)"
+                                     :else (str "factorial " number " = " (fac (js/parseInt number))))
                                p (.querySelector js/document "p")]
                            (set! (.-innerHTML p) msg)))))
