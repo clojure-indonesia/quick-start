@@ -1,5 +1,7 @@
 (ns quick-start.core
-  (:require [goog.events :refer [listen]])
+  (:require [goog.events :refer [listen]]
+            [cljs.core.async :refer [<! >! chan put!]])
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:import [goog.events EventType]))
 
 (enable-console-print!)
@@ -15,14 +17,23 @@
       (recur (dec cnt)
              (* acc cnt)))))
 
-(let [button (.querySelector js/document "button")
-      click EventType.CLICK]
-  (listen button click (fn []
-                         (let [number (->> (.querySelector js/document "input[type=number]")
-                                           (.-value))
-                               msg (cond
-                                     (= number "") "Can't convert string '' to number, NaN"
-                                     (neg? (js/parseInt number)) "Positive integer, please :)"
-                                     :else (str "factorial " number " = " (fac (js/parseInt number))))
-                               p (.querySelector js/document "p")]
-                           (set! (.-innerHTML p) msg)))))
+(defn event
+  []
+  (let [out (chan)
+        button (.querySelector js/document "button")
+        type EventType.CLICK]
+    (listen button type (fn [] (put! out (->> (.querySelector js/document "input[type=number]")
+                                              (.-value)))))
+    out))
+
+(defn view
+  [in]
+  (let [msg (cond
+              (= in "") "Can't convert string '' to number, NaN"
+              (neg? (js/parseInt in)) "Positive integer, please :)"
+              :else (str "factorial " in " = " (fac (js/parseInt in))))
+        p (.querySelector js/document "p")]
+    (set! (.-innerHTML p) msg)))
+
+(go (while true
+      (view (<! (event)))))
